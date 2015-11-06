@@ -35,7 +35,11 @@ angular.module('player', [])
 
                         })
                     }
+<<<<<<< HEAD
                 });
+=======
+                    console.log("CURRENT PLAYER : "+me.symbol)
+>>>>>>> 40eaf14... last v2
 
                 return initPromise.promise;
 
