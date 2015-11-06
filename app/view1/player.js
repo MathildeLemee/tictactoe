@@ -16,6 +16,7 @@ angular.module('player', [])
                         var o = {id: Date.now(), symbol: "o", number: -1}
                         ref.child("waitingPlayers").push(o);
                         me = o
+                        ref.child("board").remove();
                         initPromise.resolve(o);
 
                     } else {
