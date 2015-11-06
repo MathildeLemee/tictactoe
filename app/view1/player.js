@@ -36,7 +36,11 @@ angular.module('player', [])
                         })
                     }
 <<<<<<< HEAD
+<<<<<<< HEAD
                 });
+=======
+                    console.log("CURRENT PLAYER : "+me.symbol)
+>>>>>>> 40eaf14... last v2
 =======
                     console.log("CURRENT PLAYER : "+me.symbol)
 >>>>>>> 40eaf14... last v2
