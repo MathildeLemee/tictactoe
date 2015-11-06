@@ -25,6 +25,7 @@ angular.module('player', [])
                         ref.child("waitingPlayers").push(x);
                         initPromise.resolve(x);
                     }
+                    console.log("CURRENT PLAYER : "+me.symbol)
 
                 })
                 return initPromise.promise;

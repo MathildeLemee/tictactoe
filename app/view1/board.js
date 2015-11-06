@@ -7,15 +7,16 @@ angular.module('boardFactory', [])
         var ref = new Firebase("https://tictactoedevoxx.firebaseio.com/board");
         var winning_combos = calculateWinningCombos();
 
-function isFull(){
-        for (var i = 0; i < grid * grid; i++) {
-            console.log(board[i] + " " + i)
-            if (!board[i]) {
-                return false;
+        function isFull() {
+            for (var i = 0; i < grid * grid; i++) {
+                console.log(board[i] + " " + i)
+                if (!board[i]) {
+                    return false;
+                }
             }
+            return true;
         }
-        return true;
-}
+
         function checkWinner() {
             console.log("CHECK WINNER")
             var j, x, o, k;
@@ -34,7 +35,7 @@ function isFull(){
                 if (!x) {
                     winning_combo = winning_combos[combo];
                     console.log("X WIN")
-                    hasWin=true
+                    hasWin = true
                     if (X == player.get().number) {
                         $rootScope.$emit("game:win");
                     } else {
@@ -43,7 +44,7 @@ function isFull(){
                 }
                 if (!o) {
                     winning_combo = winning_combos[combo];
-                    hasWin=true
+                    hasWin = true
                     if (O == player.get().number) {
                         $rootScope.$emit("game:win");
                     } else {
@@ -53,7 +54,7 @@ function isFull(){
                 }
             }
 
-            if (isFull()&&!hasWin){
+            if (isFull() && !hasWin) {
                 $rootScope.$emit("game:tie");
             }
         }
@@ -118,7 +119,6 @@ function isFull(){
                 var ref = new Firebase("https://tictactoedevoxx.firebaseio.com/board");
                 //board = []// $firebaseObject(ref);
             },
-
 
 
             checkWinner: function () {
