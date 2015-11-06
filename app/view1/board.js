@@ -1,12 +1,75 @@
 'use strict';
 angular.module('boardFactory', [])
-    .factory('boardFactory', function ($firebaseObject, $rootScope) {
+    .factory('boardFactory', function ($firebaseObject, $rootScope, player) {
         var grid = 3;
         var X = 1;
         var O = -1;
-        var board =[]//= [null,null,null,null,null,null,null,null,null]
-        var winning_combos
+        var ref = new Firebase("https://tictactoedevoxx.firebaseio.com/board");
+        var winning_combos = calculateWinningCombos();
+
+function isFull(){
+        for (var i = 0; i < grid * grid; i++) {
+            console.log(board[i] + " " + i)
+            if (!board[i]) {
+                return false;
+            }
+        }
+        return true;
+}
+        function checkWinner() {
+            console.log("CHECK WINNER")
+            var j, x, o, k;
+            var hasWin = false;
+            console.log(winning_combos)
+            for (var combo in winning_combos) {
+                console.log(combo
+                )
+                j = x = o = grid;
+                while (j--) {
+                    k = winning_combos[combo][j];
+                    console.log(k)
+                    if (board[k] > 0) x--;
+                    if (board[k] < 0) o--;
+                }
+                if (!x) {
+                    winning_combo = winning_combos[combo];
+                    console.log("X WIN")
+                    hasWin=true
+                    if (X == player.get().number) {
+                        $rootScope.$emit("game:win");
+                    } else {
+                        $rootScope.$emit("game:loose");
+                    }
+                }
+                if (!o) {
+                    winning_combo = winning_combos[combo];
+                    hasWin=true
+                    if (O == player.get().number) {
+                        $rootScope.$emit("game:win");
+                    } else {
+                        $rootScope.$emit("game:loose");
+                    }
+                    return O; // o won
+                }
+            }
+
+            if (isFull()&&!hasWin){
+                $rootScope.$emit("game:tie");
+            }
+        }
+
+        var board = []
+        ref.on("child_added", function (snapshot) {
+            console.log(board[snapshot.key()])
+            if (board[snapshot.key()] === undefined) {
+                board[snapshot.key()] = snapshot.val();
+                console.log(board)
+                $rootScope.$apply();
+            }
+            checkWinner();
+        })
         var winning_combo
+
 
         function calculateWinningCombos() {
             var combos = [];
@@ -20,11 +83,11 @@ angular.module('boardFactory', [])
                 d.push((grid - i - 1) * grid + i);
             }
             combos.push(c, d);
-            console.log( combos)
+            console.log(combos)
             return combos;
         }
 
-        function  negamaxSearch(depth, player, alpha, beta){
+        function negamaxSearch(depth, player, alpha, beta) {
             var size = 100;
             var intelligence = 6;
             var undef;
@@ -49,62 +112,24 @@ angular.module('boardFactory', [])
             }
             return depth ? max || 0 : next; // 0 is tie game
         }
-        
+
         return {
             init: function ($scope) {
                 var ref = new Firebase("https://tictactoedevoxx.firebaseio.com/board");
-                board = []// $firebaseObject(ref);
-               // syncObject.$bindTo($scope, "board");
-                winning_combos = calculateWinningCombos();
-               // winning_combo = null;
+                //board = []// $firebaseObject(ref);
             },
-            
 
-            isFull: function () {
-                for (var i = 0; i < grid * grid; i++) {
-                    console.log(board[i]+" "+i)
-                    if (!board[i]) {
-                        return false;
-                    }
-                }
-                return true;
-            },
+
 
             checkWinner: function () {
-                console.log("CHECK WINNER")
-                var j, x, o, k;
-                console.log(winning_combos)
-                for (var combo in winning_combos) {
-                    console.log(combo
-                    )
-                    j = x = o = grid;
-                    while (j--) {
-                        k = winning_combos[combo][j];
-                        console.log(k)
-                        if (board[k] > 0) x--;
-                        if (board[k] < 0) o--;
-                    }
-                    if (!x) {
-                        winning_combo = winning_combos[combo];
-                        console.log("X WIN")
-                        return X; // x won
-                    }
-                    if (!o) {
-                        winning_combo = winning_combos[combo];
-
-                        console.log("O WIN")
-                        return O; // o won
-                    }
-                }
+                return checkWinner();
             },
 
-            move: function (index, player) {
-
-console.log(board[index])
+            move: function (index) {
+                console.log(board[index])
                 if (typeof board[index] === "undefined") {
-                    board[index] = player.symbol === 'x' ? X : O;
-                    console.log(board
-                    )
+                    board[index] = player.get().symbol === 'x' ? X : O;
+                    ref.child(index).set(board[index]);
                 }
 
 
