@@ -9,7 +9,7 @@ angular.module('myApp.view1', ['ngRoute', 'boardFactory', 'game', 'player', 'fir
         });
     }])
 
-    .controller('View1Ctrl', function ($firebaseArray, $scope, boardFactory, game, grid_size, $rootScope) {
+    .controller('View1Ctrl', function ($firebaseArray, $scope, boardFactory, game, grid_size, $rootScope,player) {
         var ref = new Firebase("https://tictactoedevoxx.firebaseio.com/grid");
         $scope.grid = ['', '', '']// $firebaseArray(ref);
         $scope.status_message = "";
@@ -53,7 +53,16 @@ angular.module('myApp.view1', ['ngRoute', 'boardFactory', 'game', 'player', 'fir
                 game.move(boardIndex);
             }
         }
-
+        $scope.messages = [];
+        var ref = new Firebase("https://tictactoedevoxx.firebaseio.com/mess");
+        ref.limitToLast(2).on("child_added",function(snapshot){
+            $scope.messages.push(snapshot.val());
+            $scope.$apply();
+        })
+        $scope.sendMessage = function(mess){
+            mess.from = player.get().id;
+            ref.push(mess)
+        }
         $scope.getSquareSymbol = function (col, row) {
             var boardIndex = (row * grid_size) + col;
             return boardFactory.renderSquare(boardIndex);
