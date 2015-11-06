@@ -9,33 +9,41 @@ angular.module('player', [])
                 console.log("init")
                 var initPromise = $q.defer()
                 var ref = new Firebase("https://tictactoedevoxx.firebaseio.com");
-                ref.child("waitingPlayers").once("value", function (snapshot) {
-                    var nbChildren = snapshot.numChildren();
-                    console.log(nbChildren)
-                    if (nbChildren % 2== 0 ) {
-                        var o = {id: Date.now(), symbol: "o", number: -1}
-                        ref.child("waitingPlayers").push(o);
-                        me = o
-                        ref.child("board").remove();
-                        initPromise.resolve(o);
-
+                ref.authWithOAuthPopup("facebook", function (error, authData) {
+                    if (error) {
+                        console.log("Login Failed!", error);
                     } else {
-                        var x = {id: Date.now(), symbol: "x", number: 1}
-                        me = x
-                        ref.child("waitingPlayers").push(x);
-                        initPromise.resolve(x);
-                    }
-                    console.log("CURRENT PLAYER : "+me.symbol)
+                        console.log("Authenticated successfully with payload:", authData);
 
-                })
+                        ref.child("waitingPlayers").once("value", function (snapshot) {
+                            var nbChildren = snapshot.numChildren();
+                            console.log(nbChildren)
+                            if (nbChildren % 2 == 0) {
+                                var o = {id: authData.facebook.id, name:authData.facebook.displayName,symbol: "o", number: -1}
+                                ref.child("waitingPlayers").push(o);
+                                me = o
+                                ref.child("board").remove();
+                                initPromise.resolve(o);
+
+                            } else {
+                                var x = {id: authData.facebook.id, name:authData.facebook.displayName, symbol: "x", number: 1}
+                                me = x
+                                ref.child("waitingPlayers").push(x);
+                                initPromise.resolve(x);
+                            }
+                            console.log("CURRENT PLAYER : " + me.symbol)
+
+                        })
+                    }
+                });
+
                 return initPromise.promise;
 
-            }, get : function(){
+            }, get: function () {
                 return me;
             }
         }
     })
-
 
 
 //let's play :
