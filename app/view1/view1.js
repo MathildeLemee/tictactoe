@@ -60,7 +60,7 @@ angular.module('myApp.view1', ['ngRoute', 'boardFactory', 'game', 'player', 'fir
             $scope.$apply();
         })
         $scope.sendMessage = function(mess){
-            mess.from = player.get().id;
+            mess.from = player.get().name;
             ref.push(mess)
         }
         $scope.getSquareSymbol = function (col, row) {

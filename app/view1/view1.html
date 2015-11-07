@@ -16,7 +16,7 @@
         </div>
     </div>
     <div><h2>Chats</h2>
-        <p ng-repeat="mess in messages"><b>{{mess.from}}</b>{{mess.text}}</p>
+        <p ng-repeat="mess in messages"><b>{{mess.from}} : </b>{{mess.text}}</p>
         <form >
             <input type="text" id="name" ng-model="mess.text"/>
             <input type="submit" ng-click="sendMessage(mess)"/>
