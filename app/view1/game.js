@@ -2,14 +2,15 @@ angular.module('game', [])
     .factory('game', function ($firebaseObject, $rootScope, boardFactory, player) {
         // defaults
         var computer_first = false;
+        var current_player;
         var grid = 3;
-
+        var manual_player
         // players
-        var manual_player = player.init('o', false,-1);
-        var computer_player = player.init('x', true,1);
-        console.log(manual_player)
-        console.log(computer_player)
-        var current_player = manual_player;
+        player.init().then(function(dataPlayer){
+            manual_player = dataPlayer;
+            current_player = manual_player
+            console.log(dataPlayer)
+        });
 
         function checkWinner() {
             var winner = boardFactory.checkWinner();
@@ -17,7 +18,7 @@ angular.module('game', [])
                 if (winner == manual_player.number) {
                     $rootScope.$emit("game:win", manual_player);
                 } else {
-                    $rootScope.$emit("game:win", computer_player);
+                    $rootScope.$emit("game:loose", manual_player);
                 }
             }
         }
@@ -28,7 +29,7 @@ angular.module('game', [])
                 tie = true;
             } else {
                 boardFactory.move(next_move, current_player);
-                current_player = current_player.is_computer ? manual_player : computer_player;
+                current_player =  manual_player ;
             }
         }
 
@@ -56,10 +57,6 @@ angular.module('game', [])
                     current_player = current_player.is_computer ? manual_player : computer_player;
                     winner = checkWinner();
                     if (winner == null) {
-                        if (current_player.is_computer) {
-                            computer_move();
-                        }
-                        winner = checkWinner();
                         if ((winner == null) && ( boardFactory.isFull())) {
                             $rootScope.$emit("game:tie");
                             tie = true;
