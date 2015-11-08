@@ -58,8 +58,15 @@ angular.module('myApp.view1', ['ngRoute', 'boardFactory', 'game', 'player', 'fir
             $scope.$apply();
         }
         $scope.messages = [];
+        ref.limitToFirst(2).orderByChild("at").on("child_added", function (snapshot) {
+            $scope.messages.push(snapshot.val());
+            refresh();
+        })
+
         $scope.sendMess = function (mess) {
-            $scope.messages.push(mess);
+            mess.from = "me";
+            mess.at = Firebase.ServerValue.TIMESTAMP;
+            ref.push(mess);
         }
 
         $scope.getSquareSymbol = function (col, row) {
