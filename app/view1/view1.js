@@ -10,7 +10,6 @@ angular.module('myApp.view1', ['ngRoute', 'boardFactory', 'game', 'player', 'fir
     }])
 
     .controller('View1Ctrl', function ($firebaseArray, $scope, boardFactory, game, grid_size, $rootScope) {
-        var ref = new Firebase("https://tictactoedevoxx.firebaseio.com/grid");
         $scope.grid = ['', '', '']// $firebaseArray(ref);
         $scope.status_message = "";
         $scope.computer_first = false;
@@ -24,24 +23,24 @@ angular.module('myApp.view1', ['ngRoute', 'boardFactory', 'game', 'player', 'fir
             boardFactory.init($scope)
         }
 
-
-        $rootScope.$on("game:tie", function () {
-            console.log("tie")
-            $scope.status_message = "tie! no one wins!";
-            $scope.game_over = true;
-        })
-
-        $rootScope.$on("game:win", function (event, player) {
-            console.log(player)
-            if (player.is_computer) {
-                $scope.status_message = "you lose!";
-            }
-            else {
-                $scope.status_message = "you win!";
-            }
-            console.log("win", player)
-            $scope.game_over = true;
-        })
+        //
+        //$rootScope.$on("game:tie", function () {
+        //    console.log("tie")
+        //    $scope.status_message = "tie! no one wins!";
+        //    $scope.game_over = true;
+        //})
+        //
+        //$rootScope.$on("game:win", function (event, player) {
+        //    console.log(player)
+        //    if (player.is_computer) {
+        //        $scope.status_message = "you lose!";
+        //    }
+        //    else {
+        //        $scope.status_message = "you win!";
+        //    }
+        //    console.log("win", player)
+        //    $scope.game_over = true;
+        //})
         $scope.makeMove = function (col, row) {
             console.log("MakeMove")
             var boardIndex, symbol, winner;
@@ -54,18 +53,19 @@ angular.module('myApp.view1', ['ngRoute', 'boardFactory', 'game', 'player', 'fir
             }
         }
 
+        var ref = new Firebase("https://tictactoedevoxx.firebaseio.com/messages");
+        function refresh(){
+            $scope.$apply();
+        }
+        $scope.messages = [];
+        $scope.sendMess = function (mess) {
+            $scope.messages.push(mess);
+        }
+
         $scope.getSquareSymbol = function (col, row) {
             var boardIndex = (row * grid_size) + col;
             console.log(col, row)
             return boardFactory.renderSquare(boardIndex);
         }
 
-        //$scope.isSquareInWinningCombo = function (col, row) {
-        //    var boardIndex;
-        //    if (game.board && game.winner && game.board.winning_combo) {
-        //        boardIndex = (row * grid_size) + col;
-        //        return game.board.winning_combo.indexOf(boardIndex) > -1;
-        //    }
-        //    return false;
-        //}
     }).constant('grid_size', 3);
