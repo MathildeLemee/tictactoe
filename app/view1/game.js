@@ -46,15 +46,11 @@ angular.module('game', [])
                 tie = false;
                 winning_combo = [];
 
-                if (computer_first) {
-                    current_player = computer_player;
-                    computer_move();
-                }
             },
             move: function (index) {
                 if (boardFactory.canMove(index)) {
                     boardFactory.move(index, current_player);
-                    current_player = current_player.is_computer ? manual_player : computer_player;
+                    current_player = current_player;
                     winner = checkWinner();
                     if (winner == null) {
                         if ((winner == null) && ( boardFactory.isFull())) {

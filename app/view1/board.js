@@ -7,6 +7,7 @@ angular.module('boardFactory', [])
         var board =[]//= [null,null,null,null,null,null,null,null,null]
         var winning_combos
         var winning_combo
+        var ref = new Firebase("https://tictactoedevoxx.firebaseio.com/board");
 
         function calculateWinningCombos() {
             var combos = [];
@@ -52,9 +53,9 @@ angular.module('boardFactory', [])
         
         return {
             init: function ($scope) {
-                var ref = new Firebase("https://tictactoedevoxx.firebaseio.com/board");
-                board = []// $firebaseObject(ref);
-               // syncObject.$bindTo($scope, "board");
+                ref.on("child_added",function(snapshot){
+                    board[snapshot.key()]=snapshot.val()
+                })
                 winning_combos = calculateWinningCombos();
                // winning_combo = null;
             },
@@ -100,9 +101,9 @@ angular.module('boardFactory', [])
 
             move: function (index, player) {
 
-console.log(board[index])
                 if (typeof board[index] === "undefined") {
                     board[index] = player.symbol === 'x' ? X : O;
+                    ref.child(index).set(board[index]);
                     console.log(board
                     )
                 }
